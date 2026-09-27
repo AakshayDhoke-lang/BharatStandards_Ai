@@ -139,3 +139,12 @@ An attempt to host the application in a serverless environment has been successf
 
 **Access the Live Project Here:**
 👉 **[https://bharatstandards-ai.web.app/](https://bharatstandards-ai.web.app/)**
+
+---
+
+## 📦 Pre-Packaged Archives
+
+For quick deployments and testing, the repository includes pre-packaged ZIP archives in the `archives/` directory:
+
+1. **BharatStandards-AI-Vercel-Backend.zip**: A ready-to-deploy zipped version of the Vercel serverless backend.
+2. **BharatStandards-AI-Demo-Database-Pack-Deterministic-Sync-Fixed.zip**: A pre-configured demo dataset pack that can be directly imported into Firebase Firestore to instantly populate standards and evidence logs.
