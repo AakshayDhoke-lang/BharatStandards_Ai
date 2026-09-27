@@ -1,93 +1,141 @@
-# BharatStandards AI
+# 🇮🇳 BharatStandards AI
 
-BharatStandards AI is an advanced, AI-driven procurement assistant designed to automatically extract structured requirement profiles from unstructured tender documents and intelligently recommend the most accurate Bureau of Indian Standards (BIS) code. 
+**BharatStandards AI** is an advanced, enterprise-grade AI procurement assistant designed to revolutionize how government entities and private contractors interface with the Bureau of Indian Standards (BIS). 
 
-By automating the alignment of government and private tenders with Indian Standards, BharatStandards AI eliminates manual standard lookups, reduces compliance errors, and accelerates the procurement pipeline.
+By ingesting unstructured, highly technical, and often multi-page tender documents, BharatStandards AI autonomously extracts structured requirement profiles (identifying products, materials, quantities, and testing requirements). It then utilizes a highly specialized AI inference pipeline to intelligently recommend the exact normative Indian Standard (IS) code required for compliance.
 
-## 👥 Users
-- **Government Procurement Officers**: Easily verify that incoming and outgoing tenders mandate the correct BIS standards for safety, material quality, and testing.
-- **Private Contractors & Bidders**: Instantly analyze tender documents to understand the precise IS codes and certifications required to qualify for bids.
-- **Quality Assurance & Compliance Teams**: Cross-reference product specifications with active normative Indian Standards to ensure flawless compliance.
+This system effectively eliminates thousands of hours of manual standard lookups, drastically reduces compliance errors, and accelerates the procurement pipeline for national infrastructure and public goods.
 
-## 🚀 Benefits
-- **Zero-Touch Analysis**: Converts 100-page unstructured PDF/Text tenders into highly structured JSON profiles in seconds.
-- **Precision Matching**: Uses state-of-the-art LLMs (Large Language Models) to extract nuanced context (application, dimensions, materials) and map them to exact BIS Standard numbers.
-- **Risk Mitigation**: Ensures all public infrastructure and procurement materials are legally compliant with National Standards, preventing catastrophic safety failures.
-- **Auditable Evidence**: Generates a canonical, verifiable evidence trail for every matched standard stored securely on the cloud.
+---
 
-## 🛠️ Tech Stack
-- **Frontend**: React, TypeScript, Vite, TailwindCSS (Shadcn UI components)
-- **Backend**: Python, FastAPI, Uvicorn, HTTPX
-- **AI / ML**: NVIDIA NIM endpoints (Llama-3-70B-Instruct for Extraction, Google Gemma-2-9B-It for Standard Matching)
-- **Database**: Firebase (Firestore) for Canonical Evidence storage
+## 👥 Target Users
 
-## ⚙️ Architecture & Pipeline
+BharatStandards AI is built for three primary stakeholders in the procurement ecosystem:
 
-BharatStandards AI utilizes a multi-step AI inference pipeline to guarantee accuracy and reduce hallucination:
+1. **Government Procurement Officers (Tender Creators)**
+   - *Use Case*: Before publishing a tender, officers can run their drafts through the AI to automatically verify that the correct and active BIS standards for safety, material quality, and testing are mandated in the contract.
+2. **Private Contractors & Bidders (Tender Responders)**
+   - *Use Case*: Instantly analyze complex tender documents to understand the precise IS codes, laboratory testing protocols, and product certifications required to successfully qualify for bids.
+3. **Quality Assurance & Compliance Teams (Auditors)**
+   - *Use Case*: Cross-reference product specifications and factory outputs with active normative Indian Standards to ensure flawless compliance and generate canonical evidence for audits.
 
-1. **Document Ingestion**: The raw, unstructured tender document is ingested and normalized.
-2. **Extraction (Llama-3-70B)**: The primary LLM analyzes the text to extract the `RequirementProfile` (Products, Application, Quantities, Testings).
-3. **Intelligence Matching (Gemma-2-9B)**: The structured profile is passed to the specialized standard-matching LLM, which recommends the most accurate Indian Standard (IS).
-4. **Validation & Storage**: The recommendation is parsed, validated against the schema, and securely stored in Firebase Firestore as a Canonical Evidence block.
+---
 
-*(Note: The system also features a local, experimental "Pro Pipeline" running a custom fine-tuned model for offline trials).*
+## 🚀 Key Features & Benefits
 
-### 📊 Flow Diagram
+- **Zero-Touch Document Analysis**: Converts 100-page unstructured PDF/Text tenders into highly structured, schema-validated JSON requirement profiles in a matter of seconds.
+- **Context-Aware Precision Matching**: Uses state-of-the-art LLMs (Large Language Models) to extract deeply embedded, nuanced context (such as environmental application, precise dimensions, and specific material grades) and maps them to exact BIS Standard numbers.
+- **National Risk Mitigation**: Ensures all public infrastructure and procurement materials are legally compliant with National Standards, actively preventing catastrophic safety or structural failures due to sub-standard materials.
+- **Auditable Canonical Evidence**: Generates a verifiable, immutable evidence trail for every matched standard and dynamically stores it securely on the cloud via Firestore for future audits.
+
+---
+
+## 🛠️ Tech Stack & Technologies
+
+The platform is built on a modern, decoupled architecture designed for high availability and rapid AI inference:
+
+### **Frontend (Client Application)**
+- **Framework**: React 18 with TypeScript and Vite for ultra-fast HMR.
+- **Styling & UI**: TailwindCSS paired with custom Shadcn UI components for a premium, accessible, and highly responsive user interface.
+- **Routing & State**: React Router for SPA navigation.
+
+### **Backend (API Services)**
+- **Framework**: Python 3.10+ running FastAPI and Uvicorn.
+- **Async I/O**: `httpx` for non-blocking, highly concurrent external API calls.
+- **Validation**: Pydantic for strict JSON schema enforcement.
+
+### **AI & Machine Learning (The Pipeline)**
+- **Extraction Engine**: **Meta Llama-3-70B-Instruct** (Served via NVIDIA NIM endpoints) — Responsible for robust natural language understanding and extracting the structured `RequirementProfile`.
+- **Intelligence Matching Engine**: **Google Gemma-2-9B-It** (Served via NVIDIA NIM endpoints) — Responsible for matching the extracted profile against the vast database of Indian Standards to output the final recommendation.
+- *(Note: The system also features a local, experimental "Pro Pipeline" running a custom fine-tuned Qwen model for offline, singular-model trials).*
+
+### **Database & Cloud Storage**
+- **Canonical Storage**: Google Firebase (Firestore) NoSQL database for storing structured AI recommendations and compliance evidence.
+
+---
+
+## ⚙️ System Architecture & Inference Pipeline
+
+BharatStandards AI utilizes a multi-step AI inference pipeline to guarantee absolute accuracy, prevent hallucinations, and ensure strict output structuring:
+
+1. **Document Ingestion & Normalization**: The raw, unstructured tender document is ingested via the React frontend and securely transmitted to the FastAPI backend, where it is normalized and truncated to fit context windows.
+2. **Extraction Phase (Llama-3-70B)**: The primary heavyweight LLM analyzes the raw text to extract a heavily structured `RequirementProfile`. This profile categorizes the product, its intended application, quantities, material constraints, and required testing certificates.
+3. **Intelligence Matching Phase (Gemma-2-9B)**: The structured profile is then passed as context to the specialized standard-matching LLM. By focusing only on the structured data rather than the noisy raw document, the AI achieves highly accurate standard recommendations.
+4. **Validation & Storage**: The final recommendation is parsed from the LLM response, validated against strict Pydantic schemas, and securely committed to Firebase Firestore as a "Canonical Evidence" block.
+
+### 📊 System Flow Diagram
 
 ```mermaid
 graph TD
-    A[User Uploads Tender] --> B[FastAPI Backend]
+    A[User Uploads Tender Document] -->|HTTP POST| B[FastAPI Backend]
     B --> C{AI Extraction Pipeline}
-    C -->|Llama 3 70B| D[Requirement Profile JSON]
+    C -->|Llama-3-70B-Instruct| D[Requirement Profile JSON]
     D --> E{AI Matching Pipeline}
-    E -->|Gemma 2 9B| F[Standard Recommendation]
-    F --> G[Data Validation]
-    G -->|Valid| H[(Firebase Firestore)]
-    G -->|Invalid| C
-    H --> I[React Frontend Dashboard]
+    E -->|Gemma-2-9B-It| F[Standard Recommendation & Reasoning]
+    F --> G[Pydantic Data Validation]
+    G -->|Valid| H[(Firebase Firestore Database)]
+    G -->|Invalid / Missing Data| C
+    H --> I[React Frontend Compliance Dashboard]
 ```
 
-## 📋 Requirements
-- **Node.js**: v18+ 
-- **Python**: 3.10+
+---
+
+## 📋 Prerequisites
+
+Before running the project locally, ensure you have the following installed and configured:
+- **Node.js**: v18.0.0 or higher
+- **Python**: 3.10 or higher
 - **API Keys**: 
-  - NVIDIA API Key (for Llama/Gemma inference)
-  - Firebase Service Account Key (for Firestore)
+  - NVIDIA API Key (Required for Llama/Gemma cloud inference)
+  - Firebase Service Account Key JSON (Required for Firestore database access)
 - **Package Managers**: `npm` and `pip`
+
+---
 
 ## 🚀 How to Run Locally
 
-1. **Clone the Repository**
-   ```bash
-   git clone https://github.com/AakshayDhoke-lang/BharatStandards_Ai.git
-   cd BharatStandards_Ai
-   ```
+### 1. Clone the Repository
+```bash
+git clone https://github.com/AakshayDhoke-lang/BharatStandards_Ai.git
+cd BharatStandards_Ai
+```
 
-2. **Set Up Environment Variables**
-   Create a `.env` file in the root directory based on `.env.example`:
-   ```ini
-   VITE_FIREBASE_PROJECT_ID=your_project_id
-   NVIDIA_API_KEY=nvapi-your-key-here
-   # Ensure your firebase-adminsdk-xxx.json is placed in the root directory
-   ```
+### 2. Set Up Environment Variables
+Create a `.env` file in the root directory (you can use `.env.example` as a template):
+```ini
+VITE_FIREBASE_PROJECT_ID=your_firebase_project_id
+NVIDIA_API_KEY=nvapi-your-key-here
+# Ensure your firebase-adminsdk-xxx.json is placed in the root directory for backend authentication
+```
 
-3. **Install Dependencies**
-   ```bash
-   # Install frontend dependencies
-   npm install
+### 3. Install Dependencies
+```bash
+# Install frontend dependencies
+npm install
 
-   # Install backend dependencies (a virtual environment is recommended)
-   cd backend
-   pip install -r requirements.txt
-   cd ..
-   ```
+# Install backend dependencies (Using a virtual environment is highly recommended)
+cd backend
+python -m venv venv
+# Windows: venv\Scripts\activate | Mac/Linux: source venv/bin/activate
+pip install -r requirements.txt
+cd ..
+```
 
-4. **Start the Application (Full Stack)**
-   The project uses `concurrently` to boot both the React frontend and the FastAPI backend simultaneously.
-   ```bash
-   npm run dev:full
-   ```
+### 4. Start the Application (Full Stack)
+The project utilizes the `concurrently` package to boot both the React frontend (Vite) and the FastAPI backend (Uvicorn) simultaneously in a single terminal instance.
+```bash
+npm run dev:full
+```
 
-5. **Access the Application**
-   - Web UI: `http://localhost:8080`
-   - Backend API: `http://127.0.0.1:8000`
+### 5. Access the Application
+- **Frontend UI Dashboard**: `http://localhost:8080`
+- **Backend API & Swagger Docs**: `http://127.0.0.1:8000/docs`
+
+---
+
+## 🌍 Live Deployment
+
+An attempt to host the application in a serverless environment has been successfully deployed. The frontend is hosted securely via Firebase Hosting, while the Python API backend runs serverlessly on Vercel.
+
+**Access the Live Project Here:**
+👉 **[https://bharatstandards-ai.web.app/](https://bharatstandards-ai.web.app/)**
