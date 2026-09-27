@@ -1,0 +1,17 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedIn() { return request.auth != null; }
+    function profile() { return firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data; }
+    function admin() { return signedIn() && (request.auth.token.admin == true || profile().role == 'ADMIN'); }
+    function contributor() { return signedIn() && (admin() || profile().role in ['CONTRIBUTOR','REVIEWER']); }
+    match /datasets/{dataset}/ingestion/{userId}/{allPaths=**} {
+      allow read: if signedIn() && (request.auth.uid == userId || contributor());
+      allow create: if contributor() && request.auth.uid == userId;
+      allow update, delete: if request.auth.uid == userId || admin() || profile().role == 'REVIEWER';
+    }
+    match /users/{userId}/{allPaths=**} {
+      allow read, write: if signedIn() && request.auth.uid == userId;
+    }
+  }
+}

@@ -1,0 +1,61 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function hasAdminClaim() { return signedIn() && request.auth.token.admin == true; }
+    function profile() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
+    function role() { return signedIn() ? profile().role : null; }
+    function contributor() { return hasAdminClaim() || role() in ['CONTRIBUTOR','REVIEWER','ADMIN']; }
+    function reviewer() { return hasAdminClaim() || role() in ['REVIEWER','ADMIN']; }
+    function admin() { return hasAdminClaim() || role() == 'ADMIN'; }
+    function selfCreated() { return request.resource.data.createdBy == request.auth.uid; }
+    function selfUpdated() { return request.resource.data.updatedBy == request.auth.uid; }
+    function selfReviewed() { return request.resource.data.reviewedBy == request.auth.uid; }
+
+    match /users/{userId} {
+      allow read: if signedIn() && (request.auth.uid == userId || admin());
+      allow create: if signedIn() && request.auth.uid == userId && request.resource.data.role == 'USER';
+      allow update: if signedIn() && ((request.auth.uid == userId && request.resource.data.role == resource.data.role) || admin());
+      allow delete: if admin();
+      match /analyses/{analysisId} {
+        allow read, create, update, delete: if signedIn() && request.auth.uid == userId;
+      }
+    }
+
+    match /datasets/{dataset} {
+      allow read: if signedIn();
+      allow write: if admin();
+
+      match /sources/{id} {
+        allow read: if signedIn();
+        allow create: if contributor() && selfCreated();
+        allow update: if (reviewer() && selfUpdated()) || (contributor() && resource.data.createdBy == request.auth.uid && selfUpdated() && resource.data.status != 'VERIFIED' && request.resource.data.status != 'VERIFIED');
+        allow delete: if admin();
+      }
+      match /submissions/{id} {
+        allow read: if signedIn();
+        allow create: if contributor() && selfCreated();
+        allow update: if reviewer() && selfReviewed();
+        allow delete: if admin();
+      }
+      match /ingestionJobs/{id} {
+        allow read: if signedIn();
+        allow create: if contributor() && selfCreated();
+        allow update: if reviewer() || (signedIn() && resource.data.createdBy == request.auth.uid && selfUpdated());
+        allow delete: if admin();
+      }
+      match /auditLogs/{id} {
+        allow read: if signedIn();
+        allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+        allow update, delete: if false;
+      }
+      match /{sharedCollection}/{id} {
+        allow read: if signedIn();
+        allow create, update: if reviewer() && selfUpdated();
+        allow delete: if admin();
+      }
+    }
+
+    match /{document=**} { allow read, write: if false; }
+  }
+}
